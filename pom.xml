@@ -16,6 +16,7 @@
 
     <modules>
         <module>homework</module>
+        <module>sort</module>
     </modules>
 
     <dependencyManagement>
