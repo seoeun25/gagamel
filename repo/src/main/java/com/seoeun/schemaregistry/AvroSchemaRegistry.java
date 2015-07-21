@@ -29,12 +29,12 @@ public class AvroSchemaRegistry implements SchemaRegistry<Schema>{
 
     @Override
     public Schema getSchemaByID(String topicName, String id) {
-        SchemaInfo schemaInfo = client.getSchemaInfo(topicName);
+        SchemaInfo schemaInfo = client.getSchemaByTopic(topicName);
         if (schemaInfo == null) {
             throw new SchemaNotFoundException("Schema not found for " + topicName);
         }
 
-        if (!schemaInfo.getId().equals(id)) {
+        if (!String.valueOf(schemaInfo.getId()).equals(id)) {
             throw new SchemaNotFoundException("Schema not found for " + topicName + " " + id);
         }
 
@@ -43,10 +43,10 @@ public class AvroSchemaRegistry implements SchemaRegistry<Schema>{
 
     @Override
     public SchemaDetails<Schema> getLatestSchemaByTopic(String topicName) {
-        SchemaInfo schemaInfo = client.getSchemaInfo(topicName);
+        SchemaInfo schemaInfo = client.getSchemaByTopic(topicName);
         if (schemaInfo == null) {
             throw new SchemaNotFoundException("Schema not found for " + topicName);
         }
-        return new SchemaDetails<Schema>(topicName, schemaInfo.getId(), Schema.parse(schemaInfo.getSchema()));
+        return new SchemaDetails<Schema>(topicName, String.valueOf(schemaInfo.getId()), Schema.parse(schemaInfo.getSchema()));
     }
 }

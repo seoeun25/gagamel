@@ -7,10 +7,10 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.seoeun</groupId>
-  <artifactId>gagamel-repo</artifactId>
-  <name>Gagamel Repo Repository</name>
+  <artifactId>gagamel-avro-schema-repo</artifactId>
+  <name>Gagamel Restful Avro Schema Repository</name>
   <version>0.9-SNAPSHOT</version>
-  <description>Gagamel Repo Repository</description>
+  <description>Gagamel Restful Avro Schema Repository</description>
   <build>
     <plugins>
       <plugin>

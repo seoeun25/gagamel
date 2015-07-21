@@ -1,7 +1,7 @@
 package com.seoeun.server;
 
 import com.seoeun.AvroRepoException;
-import com.seoeun.rest.EntryPoint;
+import com.seoeun.rest.RESTRepository;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.handler.ContextHandlerCollection;
 import org.mortbay.jetty.servlet.Context;
@@ -16,6 +16,8 @@ public class RepoServer implements AppService {
     private static RepoServer repoServer;
     public int PORT = DEFAULT_PORT;
     private Server jettyServer;
+
+    private JDBCService jdbcService;
 
     public RepoServer() {
 
@@ -62,13 +64,14 @@ public class RepoServer implements AppService {
     }
 
     private void initServices() throws AvroRepoException {
-
+        jdbcService = new JDBCService();
+        jdbcService.start();
     }
 
     public void start() throws AvroRepoException {
         LOG.info("========= Collector Master Starting ......   ========");
 
-        //init();
+        init();
 
         initServer();
 
@@ -92,7 +95,8 @@ public class RepoServer implements AppService {
         Context root = new Context(contexts, "/avro-repo", Context.SESSIONS);
         ServletHolder jerseyServlet = new ServletHolder(org.glassfish.jersey.servlet.ServletContainer.class);
         jerseyServlet.setInitOrder(0);
-        jerseyServlet.setInitParameter("jersey.config.server.provider.classnames", EntryPoint.class.getCanonicalName());
+        jerseyServlet.setInitParameter("jersey.config.server.provider.classnames", RESTRepository.class.getCanonicalName());
+
         root.addServlet(jerseyServlet, "/*");
     }
 
@@ -106,6 +110,10 @@ public class RepoServer implements AppService {
         }
         LOG.info("========= Collector Master Shutdown ======== \n");
 
+    }
+
+    public JDBCService getJdbcService() {
+        return jdbcService;
     }
 
     private static class ShutdownInterceptor extends Thread {

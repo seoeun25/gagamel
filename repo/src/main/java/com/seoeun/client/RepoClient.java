@@ -20,7 +20,7 @@ public class RepoClient {
 
     }
 
-    public SchemaInfo getSchemaInfo(String schema) {
+    public SchemaInfo getSchemaByTopic(String topicName) {
         return null;
 
     }

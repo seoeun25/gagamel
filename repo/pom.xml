@@ -8,10 +8,10 @@
 	<relativePath>../pom.xml</relativePath>
     </parent>
     <groupId>com.seoeun</groupId>
-    <artifactId>gagamel-repo</artifactId>
+    <artifactId>gagamel-avro-schema-repo</artifactId>
     <version>0.9-SNAPSHOT</version>
-    <description>Gagamel Repo Repository</description>
-    <name>Gagamel Repo Repository</name>
+    <description>Gagamel Restful Avro Schema Repository</description>
+    <name>Gagamel Restful Avro Schema Repository</name>
     <packaging>jar</packaging>
 
     <dependencies>
@@ -127,6 +127,12 @@
             <groupId>org.glassfish.jersey.media</groupId>
             <artifactId>jersey-media-moxy</artifactId>
             <version>2.7</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.googlecode.json-simple</groupId>
+            <artifactId>json-simple</artifactId>
+            <version>1.1</version>
         </dependency>
 
 
