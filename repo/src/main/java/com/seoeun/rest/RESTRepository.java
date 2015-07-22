@@ -1,16 +1,23 @@
 package com.seoeun.rest;
 
+import com.seoeun.jpa.QueryExecutor;
 import com.seoeun.schemaregistry.SchemaInfo;
-import org.apache.openjpa.persistence.jdbc.ForeignKey;
 
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.core.Response;
 
 @Path("/")
 public class RESTRepository {
+
+    private QueryExecutor queryExecutor;
+    public RESTRepository() {
+        // TODO : inject
+        queryExecutor = new QueryExecutor();
+    }
 
     @GET
     @Path("schema/ids/{id}")
@@ -47,12 +54,18 @@ public class RESTRepository {
 
     @POST
     @Path("subjects/{subject}")
-    public String registerSchema(@PathParam("subject") String subject, @FormParam("schema") String schema) {
-
-        System.out.println("---- subject : " + subject);
-        System.out.println("---- schema : " + schema);
-
-        String schemaResult = "-- POST schema-topic-id-" + subject + " :: " + schema + "---";
-        return schemaResult;
+    public Response registerSchema(@PathParam("subject") String subject, @FormParam("schema") String schema) {
+        try {
+            SchemaInfo schemaExist = queryExecutor.getListLimit1(QueryExecutor.SchemaInfoQuery.GET_SCHEMALATEST, new
+                    Object[]{schema});
+            if (schemaExist != null) {
+                return Response.status(200).entity(schemaExist).build();
+            }
+            SchemaInfo schemaInfo = new SchemaInfo(subject, schema);
+            queryExecutor.insert(schemaInfo);
+            return Response.status(200).entity(schemaInfo).build();
+        } catch (Exception e) {
+            return Response.status(500).entity(e.getMessage()).build();
+        }
     }
 }

@@ -20,7 +20,7 @@ import java.util.Properties;
 
 public class JDBCService implements AppService {
 
-    public static final String CONF_PREFIX = "collector.master.";
+    public static final String CONF_PREFIX = "avro.repo.";
     public static final String CONF_URL = CONF_PREFIX + "jdbc.url";
     public static final String CONF_DRIVER = CONF_PREFIX + "jdbc.driver";
     public static final String CONF_USERNAME = CONF_PREFIX + "jdbc.username";
@@ -42,8 +42,6 @@ public class JDBCService implements AppService {
     }
 
     private BasicDataSource getBasicDataSource() {
-        // Get the BasicDataSource object; it could be wrapped in a DecoratingDataSource
-        // It might also not be a BasicDataSource if the user configured something different
         BasicDataSource basicDataSource = null;
         OpenJPAEntityManagerFactorySPI spi = (OpenJPAEntityManagerFactorySPI) factory;
         Object connectionFactory = spi.getConfiguration().getConnectionFactory();
@@ -65,9 +63,8 @@ public class JDBCService implements AppService {
         String maxConn = RepoContext.getContext().getConfig(CONF_MAX_ACTIVE_CONN).trim();
         String dataSource = RepoContext.getContext().getConfig(CONF_CONN_DATA_SOURCE);
         String connPropsConfig = RepoContext.getContext().getConfig(CONF_CONN_PROPERTIES);
-        //TODO defalut check. true
-        boolean autoSchemaCreation = Boolean.getBoolean(RepoContext.getContext().getConfig(CONF_CREATE_DB_SCHEMA));
-        boolean validateDbConn = Boolean.getBoolean(RepoContext.getContext().getConfig(CONF_VALIDATE_DB_CONN));
+        boolean autoSchemaCreation = Boolean.parseBoolean(RepoContext.getContext().getConfig(CONF_CREATE_DB_SCHEMA));
+        boolean validateDbConn = Boolean.parseBoolean(RepoContext.getContext().getConfig(CONF_VALIDATE_DB_CONN));
         String evictionInterval = RepoContext.getContext().getConfig(CONF_VALIDATE_DB_CONN_EVICTION_INTERVAL).trim();
         String evictionNum = RepoContext.getContext().getConfig(CONF_VALIDATE_DB_CONN_EVICTION_NUM).trim();
 
@@ -83,7 +80,7 @@ public class JDBCService implements AppService {
         connProps = MessageFormat.format(connProps, driver, url, user, password, maxConn);
         Properties props = new Properties();
         if (autoSchemaCreation) {
-            connProps += ",TestOnBorrow=false,TestOnReturn=false,TestWhileIdle=false";
+            connProps += ",TestOnBorrow=true,TestOnReturn=true,TestWhileIdle=true";
             props.setProperty("openjpa.jdbc.SynchronizeMappings", "buildSchema(ForeignKeys=true)");
         } else if (validateDbConn) {
             String interval = "timeBetweenEvictionRunsMillis=" + evictionInterval;
@@ -192,6 +189,21 @@ public class JDBCService implements AppService {
             List<?> resultList = null;
             try {
                 resultList = query.getResultList();
+            } catch (NoResultException e) {
+                // return null when no matched result
+            }
+            return resultList;
+        } finally {
+            processFinally(em, namedQueryName, false);
+        }
+    }
+
+    public List<?> executeGetListLimit1(String namedQueryName, Query query, EntityManager em) {
+        try {
+
+            List<?> resultList = null;
+            try {
+                resultList = query.setMaxResults(1).getResultList();
             } catch (NoResultException e) {
                 // return null when no matched result
             }

@@ -38,7 +38,7 @@ public class AvroSchemaRegistry implements SchemaRegistry<Schema>{
             throw new SchemaNotFoundException("Schema not found for " + topicName + " " + id);
         }
 
-        return Schema.parse(schemaInfo.getSchema());
+        return Schema.parse(schemaInfo.getSchemaStr());
     }
 
     @Override
@@ -47,6 +47,6 @@ public class AvroSchemaRegistry implements SchemaRegistry<Schema>{
         if (schemaInfo == null) {
             throw new SchemaNotFoundException("Schema not found for " + topicName);
         }
-        return new SchemaDetails<Schema>(topicName, String.valueOf(schemaInfo.getId()), Schema.parse(schemaInfo.getSchema()));
+        return new SchemaDetails<Schema>(topicName, String.valueOf(schemaInfo.getId()), Schema.parse(schemaInfo.getSchemaStr()));
     }
 }

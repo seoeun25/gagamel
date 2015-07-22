@@ -17,12 +17,12 @@ import java.util.Calendar;
 @Entity
 @NamedQueries({
 
-        @NamedQuery(name = "GET_SCHEMABYSCHEMA", query = "select a.name, a.id, a.schema, a.created " +
-                "from schemainfo a where a.schema = :schema "),
-        @NamedQuery(name = "GET_SCHEMABYID", query = "select a.name, a.id, a.schema, a.created " +
-                "from schemainfo a where a.id = :id "),
-        @NamedQuery(name = "GET_SCHEMALATEST", query = "select a.name, a.id, a.schema, a.created " +
-                "from schemainfo a where a.schema = :schema ")
+        @NamedQuery(name = "GET_SCHEMABYSCHEMA", query = "select a.name, a.id, a.schemaStr, a.created " +
+                "from SchemaInfo a where a.schemaStr = :schemaStr "),
+        @NamedQuery(name = "GET_SCHEMABYID", query = "select a.name, a.id, a.schemaStr, a.created " +
+                "from SchemaInfo a where a.id = :id "),
+        @NamedQuery(name = "GET_SCHEMALATEST", query = "select a.name, a.id, a.schemaStr, a.created " +
+                "from SchemaInfo a where a.schemaStr = :schemaStr order by a.created desc ")
 
 })
 @Table(name = "schemainfo")
@@ -37,44 +37,28 @@ public class SchemaInfo {
     @Column(name = "id" )
     private long id;
 
-    @Column(name = "schema")
-    private String schema;
+    @Column(name = "schemaStr", length = 20480)
+    private String schemaStr;
 
     @Column(name = "created")
     @Temporal(TemporalType.TIMESTAMP)
     private Calendar created;
 
     public SchemaInfo() {
-
-    }
-
-    public SchemaInfo(String name, String schema) {
-        this.name = name;
-        this.schema = schema;
         this.created = Calendar.getInstance();
     }
 
-    public SchemaInfo(String name, long id, String schema) {
+    public SchemaInfo(String name, String schemaStr) {
+        this.name = name;
+        this.schemaStr = schemaStr;
+        this.created = Calendar.getInstance();
+    }
+
+    public SchemaInfo(String name, long id, String schemaStr) {
         this.name = name;
         this.id = id;
-        this.schema = schema;
+        this.schemaStr = schemaStr;
         this.created = Calendar.getInstance();
-    }
-
-    public String getSchema() {
-        return schema;
-    }
-
-    public void setSchema(String schema) {
-        this.schema = schema;
-    }
-
-    public Calendar getCreated() {
-        return created;
-    }
-
-    public void setCreated(Calendar created) {
-        this.created = created;
     }
 
     public long getId() {
@@ -93,11 +77,27 @@ public class SchemaInfo {
         this.name = name;
     }
 
+    public String getSchemaStr() {
+        return schemaStr;
+    }
+
+    public void setSchemaStr(String schemaStr) {
+        this.schemaStr = schemaStr;
+    }
+
+    public Calendar getCreated() {
+        return created;
+    }
+
+    public void setCreated(Calendar created) {
+        this.created = created;
+    }
+
     public JSONObject toJsonOblect() {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("name", name);
         jsonObject.put("id", id);
-        jsonObject.put("schema", schema);
+        jsonObject.put("schemaStr", schemaStr);
         jsonObject.put("created", created.getTimeInMillis());
         return jsonObject;
     }
@@ -107,7 +107,7 @@ public class SchemaInfo {
     }
 
     public Object[] toParams() {
-        Object[] params = new java.lang.Object[]{getName(), getId(), getSchema(), getCreated().getTimeInMillis()};
+        Object[] params = new java.lang.Object[]{getName(), getId(), getSchemaStr(), getCreated().getTimeInMillis()};
         return params;
     }
 
