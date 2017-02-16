@@ -23,8 +23,6 @@
     <modules>
         <module>homework</module>
         <module>sort</module>
-        <module>realtime</module>
-        <module>repo</module>
     </modules>
 
     <dependencyManagement>
